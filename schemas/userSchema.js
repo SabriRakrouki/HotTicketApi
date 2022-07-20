@@ -9,19 +9,15 @@ const userSchema=new mongoose.Schema({
        type:String,
        required:true,
        unique:true
-   }, name:{
-       type:String,
-       required:true,
-       trim:true
-   },
+   }, 
    phoneNumber:{
     type:String,
-    required:true,
+    
     
 },
    surname:{
     type:String,
-    required:true,
+   
     
 },
    password:{
@@ -30,12 +26,12 @@ const userSchema=new mongoose.Schema({
        
    },
   role:{
-      type:Number,
-      default:0
+      type:String,
+      required:true,
   },
   birthDate:{
       type:Date,
-      required:true,
+      
       
   }
 },{timestamps:true})
