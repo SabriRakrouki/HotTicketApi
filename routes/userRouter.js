@@ -4,9 +4,11 @@ const { auth, authAdmin } = require('../middelWare/authentification')
 const roleMiddelWare = require('../middelWare/roleMiddelWare')
 
 
-router.post('/register', userController.adminRegister)
+router.post('/adminsignup', userController.adminRegister)
+router.post('/signuo', userController.registerSimpleUser)
+router.post('/eventprovidersignup', userController.eventProvideRegister)
 router.post('/login', userController.login)
 router.get('/logout', userController.logout)
-router.get('/refresh_token', auth, roleMiddelWare("admin"),userController.refreshToken)
+router.get('/refresh_token', authAdmin, roleMiddelWare("admin"),userController.refreshToken)
 
 module.exports = router;

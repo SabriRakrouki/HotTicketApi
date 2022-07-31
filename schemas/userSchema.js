@@ -34,5 +34,8 @@ const userSchema=new mongoose.Schema({
       
       
   }
+  ,eventComapny:{
+    type:String
+  }
 },{timestamps:true})
 module.exports=mongoose.model('Users',userSchema)

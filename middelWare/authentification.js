@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken")
+const { Role } = require("../helper/role")
 
 const auth = (req, res, next) => {
     try {
@@ -22,7 +23,15 @@ const auth = (req, res, next) => {
         return res.status(500).json({ msg: err.message })
     }
 }
+const authRole = (role) => {
+    return (req, res, next) => {
 
+        if (req.user?.role != role) return res.status(401).json({ msg: "Not Allowed" })
+
+
+        next()
+    }
+}
 
 const authAdmin = async (req, res, next) => {
     try {
@@ -31,7 +40,7 @@ const authAdmin = async (req, res, next) => {
         const user = await Users.findOne({
             _id: req.user.id
         })
-        if (user.role === 0) return res.status(400).json({ msg: 'Admin resources access denied' })
+        if (user.role === Role.ADMIN) return res.status(400).json({ msg: 'Admin resources access denied' })
         next()
 
     } catch (err) {

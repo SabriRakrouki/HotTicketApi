@@ -1,7 +1,8 @@
 const User = require('../schemas/userSchema');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { simpleUserSchema, Authentication } = require('../helper/validationSchema')
+const {Role}=require('../helper/role')
+const { simpleUserSchema, Authentication, eventProvideSchema } = require('../helper/validationSchema')
 
 
 
@@ -10,18 +11,18 @@ const userController = {
         try {
             const result = simpleUserSchema.validateAsync(req.body);
             console.log(result)
-            const { username,name, email, password, surname, birthDate, phoneNumber } = req.body;
+            const { username, name, email, password, surname, birthDate, phoneNumber } = req.body;
             const user = await User.findOne(email)
 
             if (user) return res.status(400).json({ msg: 'the email already exists.' })
             if (password.length < 8)
                 return res.status(400).json({ msg: "password is at least 8 char length" })
             const passwordHash = await bcrypt.hash(password, 10)
-           
+
             const newUser = new Users({
-                name, email, password: passwordHash,surname, birthDate, phoneNumber,username,role
+                name, email, password: passwordHash, surname, birthDate, phoneNumber, username
             })
-            newUser.role="simpleUser"
+            newUser.role = Role.BASIC
             //Save mongodb
             await newUser.save();
             const accesstokent = createAccessToken({ id: user._id, role: user.role })
@@ -32,6 +33,7 @@ const userController = {
     },
     adminRegister: async (req, res) => {
         try {
+
             const { name, email, password } = req.body;
             const user = await User.findOne({ email })
             if (user) return res.status(400).json({ msg: 'the email already exists.' })
@@ -43,7 +45,7 @@ const userController = {
             const newUser = new User({
                 name, email, password: passwordHash
             })
-            newUser.role = "admin"
+            newUser.role = Role.ADMIN
             //Save mongodb
             await newUser.save();
             const accesstokent = createAccessToken({ id: user._id, role: user.role })
@@ -51,10 +53,38 @@ const userController = {
         } catch (err) {
             return res.status(500).json({ msg: err.message })
         }
+    },
+    eventProvideRegister:async (req, res) =>{
+
+        try {
+            const result = simpleUserSchema.validateAsync(req.body);
+            console.log(result)
+            const { username, name, email, password, surname, birthDate, phoneNumber } = req.body;
+            const user = await User.findOne(email)
+
+            if (user) return res.status(400).json({ msg: 'the email already exists.' })
+            if (password.length < 8)
+                return res.status(400).json({ msg: "password is at least 8 char length" })
+            const passwordHash = await bcrypt.hash(password, 10)
+
+            const newUser = new Users({
+                name, email, password: passwordHash, surname, birthDate, phoneNumber, username,eventComapny
+            })
+            newUser.role = Role.EventProvider
+            //Save mongodb
+            await newUser.save();
+            const accesstokent = createAccessToken({ id: user._id, role: user.role })
+            const refreshtoken = createRefreshToken({ id: user._id, role: user.role })
+        } catch (err) {
+            return res.status(500).json({ msg: err.message })
+        }
+
+
     }
     ,
     login: async (req, res) => {
         try {
+            const result = Authentication.validateAsync(req.body);
             const { email, password } = req.body;
             const user = await User.findOne({ email })
             if (!user) return res.status(400).json({ msg: "User does not exist." })
