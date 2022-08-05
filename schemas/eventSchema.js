@@ -2,7 +2,9 @@ const mongoose=require("mongoose")
 const eventSchema= new mongoose.Schema({
     nameEvent:{
     type:String,
-    require:true
+    require:true,
+    trim:true,
+    unique:true
     },
     dateBegin:{
         type:Date,
@@ -25,6 +27,10 @@ const eventSchema= new mongoose.Schema({
         require:true
     },userId:{
         type:String,
+        require:true
+    }
+    ,ticketNumber:{
+        type:Number,
         require:true
     }
     ,ticketId:{

@@ -1,6 +1,4 @@
-const Events = require('../schemas/eventSchema')
-
-
+const Category = require('../schemas/categorySchema')
 class Apifeatures {
     constructor(query, queryString) {
         this.query = query;
@@ -39,86 +37,80 @@ class Apifeatures {
         return this;
     }
 }
-
-
-
-const eventController = {
-    getAllEvent: async (req, res) => {
+const CategoryController = {
+    getAllCategories: async (req, res) => {
         try {
 
-            const feature = new Apifeatures(Events.find(), req.query).filtering().sorting().paginating()
+            const feature = new Apifeatures(Category.find(), req.query).filtering().sorting().paginating()
 
-            const events = await feature.query
+            const category = await feature.query
 
             res.json({
                 status: 'success',
-                result: events.length,
-                events: events
+                result: category.length,
+                categories: category
             })
 
 
         } catch (err) {
             return res.status(500).json({ msg: err.message })
         }
-    },
-    addEvent: async (req, res) => {
+    }
+    ,
+    getCategoryById: async (req, res) => {
         try {
-            const { eventName, dateBegin, dateEnd, eventProvide, category_id, images } = req.body
-            if (!images) return res.status(400).json({ msg: 'No image upload' })
+            const category = await User.findById(req.category.id)
+            if (!category) return res.status(400).json({ msg: "Category does not exist" })
+            res.json(category)
 
-            const event = await Events.findOne({ eventName })
-            if (event)
-                return res.status(400).json({ msg: 'This event already exists.' })
-            const newEvent = new Events({
-                eventName, dateBegin, dateEnd, eventProvide, category_id, images
+        } catch (err) {
+            return res.status(500).json({ msg: err.message })
+
+
+        }
+    },
+    addCategory: async (req, res) => {
+        try {
+            const { CategoryName } = req.body
+
+
+            const category = await Category.findOne({ CategoryName })
+            if (category)
+                return res.status(400).json({ msg: 'This Category already exists.' })
+            const newCategory = new Events({
+                CategoryName
             })
-            await newEvent.save()
+            await newCategory.save()
 
-            res.json({ msg: "Created a event" })
+            res.json({ msg: "Created a Category" })
 
         } catch (err) {
             return res.status(500).json({ msg: err.message })
         }
     },
-    deleteEvent: async (req, res) => {
-        try {
-            await Events.findByIdAndDelete(req.params.id)
-            res.json({ msg: "event deleted" })
-        } catch (err) {
-            return res.status(500).json({ msg: err.message })
-        }
-    },
-    updateEvent: async (req, res) => {
-        try {
-            const { event_id, eventName, dateBegin, dateEnd, eventProvide, category_id, images } = req.body
-            if (!images) return res.status(400).json({ msg: 'No image upload' })
+    updateCategroy: async (req, res) => {
 
-            await Events.findOneAndUpdate({ _id: req.params.id }, {
-                event_id, eventName, dateBegin, dateEnd, eventProvide, category_id, images
+        try {
+            const { CategoryName } = req.body
+
+
+            await Category.findOneAndUpdate({ _id: req.params.id }, {
+                CategoryName
+
             })
-            res.json({ msg: 'Update a Event' })
+            res.json({ msg: 'Update a Category' })
         } catch (err) {
             return res.status(500).json({ msg: err.message })
         }
     },
-    getEventById: async (req, res) => {
+    deleteCategory: async (req, res) => {
         try {
-            const event = await User.findById(req.event.id)
-            if (!event) return res.status(400).json({ msg: "Event does not exist" })
-            res.json(event)
-
+            await Category.findByIdAndDelete(req.params.id)
+            res.json({ msg: "Category deleted" })
         } catch (err) {
             return res.status(500).json({ msg: err.message })
-
-
         }
     }
 
-
-
 }
-
-
-
-
-module.export = eventController;
+module.exports = CategoryController

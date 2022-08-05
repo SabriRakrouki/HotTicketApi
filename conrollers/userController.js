@@ -1,7 +1,7 @@
 const User = require('../schemas/userSchema');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const {Role}=require('../helper/role')
+const { Role } = require('../helper/role')
 const { simpleUserSchema, Authentication, eventProvideSchema } = require('../helper/validationSchema')
 
 
@@ -11,7 +11,7 @@ const userController = {
         try {
             const result = simpleUserSchema.validateAsync(req.body);
             console.log(result)
-            const { username, name, email, password, surname, birthDate, phoneNumber } = req.body;
+            const { name, email, password, surname, birthDate, phoneNumber } = req.body;
             const user = await User.findOne(email)
 
             if (user) return res.status(400).json({ msg: 'the email already exists.' })
@@ -20,7 +20,7 @@ const userController = {
             const passwordHash = await bcrypt.hash(password, 10)
 
             const newUser = new Users({
-                name, email, password: passwordHash, surname, birthDate, phoneNumber, username
+                name, email, password: passwordHash, surname, birthDate, phoneNumber
             })
             newUser.role = Role.BASIC
             //Save mongodb
@@ -54,12 +54,12 @@ const userController = {
             return res.status(500).json({ msg: err.message })
         }
     },
-    eventProvideRegister:async (req, res) =>{
+    eventProvideRegister: async (req, res) => {
 
         try {
             const result = simpleUserSchema.validateAsync(req.body);
             console.log(result)
-            const { username, name, email, password, surname, birthDate, phoneNumber } = req.body;
+            const { name, email, password, surname, birthDate, phoneNumber } = req.body;
             const user = await User.findOne(email)
 
             if (user) return res.status(400).json({ msg: 'the email already exists.' })
@@ -68,7 +68,7 @@ const userController = {
             const passwordHash = await bcrypt.hash(password, 10)
 
             const newUser = new Users({
-                name, email, password: passwordHash, surname, birthDate, phoneNumber, username,eventComapny
+                name, email, password: passwordHash, surname, birthDate, phoneNumber, eventComapny
             })
             newUser.role = Role.EventProvider
             //Save mongodb
