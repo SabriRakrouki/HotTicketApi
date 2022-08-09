@@ -23,13 +23,15 @@ const auth = (req, res, next) => {
         return res.status(500).json({ msg: err.message })
     }
 }
-const authRole = (role) => {
+const authRole = ([role]) => {
     return (req, res, next) => {
+        role.forEach(r => {
+            if (req.user.role === r) next()
+        });
+        return res.status(401).json({ msg: "Not Allowed" })
 
-        if (req.user?.role != role) return res.status(401).json({ msg: "Not Allowed" })
 
 
-        next()
     }
 }
 
@@ -47,4 +49,4 @@ const authAdmin = async (req, res, next) => {
         return res.status(500).json({ msg: err.message })
     }
 }
-module.exports = { auth, authAdmin }
+module.exports = { auth, authAdmin, authRole }

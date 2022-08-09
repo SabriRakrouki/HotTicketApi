@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const userController = require('../conrollers/userController');
+const ticketController = require('../conrollers/ticketController');
 const { auth, authAdmin } = require('../middelWare/authentification')
 const roleMiddelWare = require('../middelWare/roleMiddelWare')
 

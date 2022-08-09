@@ -42,7 +42,7 @@ class Apifeatures {
 
 
 
-const eventController = {
+const EventController = {
     getAllEvent: async (req, res) => {
         try {
 
@@ -121,4 +121,4 @@ const eventController = {
 
 
 
-module.export = eventController;
+module.export = EventController;
