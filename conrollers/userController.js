@@ -2,14 +2,15 @@ const User = require('../schemas/userSchema');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { Role } = require('../helper/role')
-const { simpleUserSchema, Authentication, eventProvideSchema } = require('../helper/validationSchema')
-
-
+const { simpleUserSchema, Authentication, eventProvideSchema } = require('../helper/validationSchema');
+const allowedOrigins = require('../helper/allowOrigin');
+const { upload } = require('../middelWare/upload');
+const { fileImageDao } = require('../middelWare/fileImageDao')
 
 const userController = {
     registerSimpleUser: async (req, res) => {
         try {
-            const result = simpleUserSchema.validateAsync(req.body);
+            // const result = simpleUserSchema.validateAsync(req.body);
             console.log(result)
             const { name, email, password, surname, birthDate, phoneNumber } = req.body;
             const user = await User.findOne(email)
@@ -20,8 +21,11 @@ const userController = {
             const passwordHash = await bcrypt.hash(password, 10)
 
             const newUser = new Users({
-                name, email, password: passwordHash, surname, birthDate, phoneNumber
+                name, email, password: passwordHash, surname, birthDate, phoneNumber, image: imgFile
             })
+
+            if (fileImageDao.getFile()) newUser.image = fileImageDao.getFile().filename;
+            newUser.activeAcc = false;
             newUser.role = Role.BASIC
             //Save mongodb
             await newUser.save();
@@ -70,6 +74,7 @@ const userController = {
             const newUser = new Users({
                 name, email, password: passwordHash, surname, birthDate, phoneNumber, eventComapny
             })
+            newUser.activeAcc = false;
             newUser.role = Role.EventProvider
             //Save mongodb
             await newUser.save();
@@ -85,7 +90,10 @@ const userController = {
     login: async (req, res) => {
         try {
             const result = Authentication.validateAsync(req.body);
+
+            console.log(req.body)
             const { email, password } = req.body;
+            console.log(result)
             const user = await User.findOne({ email })
             if (!user) return res.status(400).json({ msg: "User does not exist." })
             const isMatch = await bcrypt.compare(password, user.password)
@@ -94,14 +102,18 @@ const userController = {
 
             const accesstokent = createAccessToken({ id: user._id, role: user.role })
             const refreshtoken = createRefreshToken({ id: user._id, role: user.role })
-
-
+            res.setHeader("Access-Control-Allow-Origin", allowedOrigins)
+            res.header(
+                "Access-Control-Allow-Headers",
+                "Origin, X-Requested-With, Content-Type, Accept"
+            );
             res.cookie('refreshtoken', refreshtoken, {
                 httpOnly: true,
+
                 path: '/user/refresh_token'
 
             })
-            res.json({ accesstokent })
+            res.json({ roles: user.role, accesstokent })
         } catch (err) {
             return res.status(500).json({ msg: err.message })
 

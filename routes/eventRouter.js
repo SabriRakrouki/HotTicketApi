@@ -8,7 +8,7 @@ router.post('/addEvent', auth, authRole([Role.ADMIN, Role.EventProvider]), event
 router.post('/deleteEvent', auth, authRole([Role.ADMIN, Role.EventProvider]), eventController.deleteEvent)
 router.post('/updateEvent', auth, authRole([Role.ADMIN, Role.EventProvider]), eventController.updateEvent)
 router.post('/gellAllEvent', eventController.getAllEvent)
-router.get('/getEventById', auth, authRole([Role.ADMIN, Role.EventProvider]), authGetEvent, eventController.getEventById)
+router.get('/getEventById:idEvent', auth, authRole([Role.ADMIN, Role.EventProvider]), authGetEvent, eventController.getEventById)
 
 
 

@@ -4,14 +4,13 @@ const mongoose = require("mongoose")
 const cors = require("cors")
 const fileUpload = require("express-fileupload")
 const cookieParser = require("cookie-parser")
-
+const fileuse=require('./middelWare/upload');
+const test = require("./middelWare/fileImageDao");
 const app = express()
 app.use(express.json())
 app.use(cookieParser())
 app.use(cors())
-app.use(fileUpload({
-    useTempFiles: true
-}))
+
 //Routes
 app.use("/user",require('./routes/userRouter'))
 const URI = process.env.MONGO_URL

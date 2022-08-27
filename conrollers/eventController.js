@@ -121,4 +121,4 @@ const EventController = {
 
 
 
-module.export = EventController;
+module.exports = EventController;
